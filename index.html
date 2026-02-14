@@ -20,6 +20,7 @@
     />
 
     <style>
+      /* --- RESET & VARIABLES --- */
       :root {
         --bg-color: #fce4ec;
         --box-color: #d32f2f;
@@ -46,7 +47,7 @@
         perspective: 1000px;
       }
 
-      /* Music Control */
+      /* --- MUSIC PLAYER --- */
       .music-control {
         position: fixed; top: 20px; right: 20px;
         background: white; width: 50px; height: 50px; border-radius: 50%;
@@ -58,11 +59,30 @@
       .music-control.playing { animation-play-state: running; }
       @keyframes spin { 100% { transform: rotate(360deg); } }
 
-      /* Gift Cube */
-      #gift-scene { width: 150px; height: 150px; perspective: 1000px; position: relative; z-index: 10; cursor: pointer; transition: opacity 0.5s ease, transform 0.5s ease; }
-      .cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transform: rotateX(-20deg) rotateY(45deg); animation: rotateBox 6s infinite linear; transition: transform 1s ease; }
-      #gift-scene:hover .cube, .cube.stop-rotate { animation-play-state: paused; transform: rotateX(-10deg) rotateY(30deg) scale(1.1); }
-      .face { position: absolute; width: 150px; height: 150px; background: var(--box-color); border: 2px solid #b71c1c; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
+      /* --- 3D GIFT BOX --- */
+      #gift-scene {
+        width: 150px; height: 150px;
+        perspective: 1000px; position: relative; z-index: 10; cursor: pointer;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+      .cube {
+        width: 100%; height: 100%; position: relative;
+        transform-style: preserve-3d;
+        transform: rotateX(-20deg) rotateY(45deg);
+        animation: rotateBox 6s infinite linear;
+        transition: transform 1s ease;
+      }
+      #gift-scene:hover .cube, .cube.stop-rotate {
+        animation-play-state: paused;
+        transform: rotateX(-10deg) rotateY(30deg) scale(1.1);
+      }
+      .face {
+        position: absolute; width: 150px; height: 150px;
+        background: var(--box-color); border: 2px solid #b71c1c;
+        display: flex; justify-content: center; align-items: center;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+      }
+      /* Pita Kotak */
       .face::after { content: ''; position: absolute; width: 30px; height: 100%; background: var(--ribbon-color); left: 60px; top: 0; }
       .face::before { content: ''; position: absolute; height: 30px; width: 100%; background: var(--ribbon-color); top: 60px; left: 0; }
       .front  { transform: translateZ(75px); }
@@ -70,46 +90,147 @@
       .right  { transform: rotateY(90deg) translateZ(75px); }
       .left   { transform: rotateY(-90deg) translateZ(75px); }
       .bottom { transform: rotateX(-90deg) translateZ(75px); box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-      .lid { position: absolute; width: 160px; height: 160px; background: #e53935; top: -5px; left: -5px; transform: translateZ(75px) rotateX(0deg); transform-origin: top; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); border: 2px solid #b71c1c; display: flex; justify-content: center; align-items: center; }
+      
+      .lid {
+        position: absolute; width: 160px; height: 160px;
+        background: #e53935; top: -5px; left: -5px;
+        transform: translateZ(75px) rotateX(0deg);
+        transform-origin: top;
+        transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid #b71c1c;
+        display: flex; justify-content: center; align-items: center;
+      }
       .lid::after { content: ''; position: absolute; width: 30px; height: 100%; background: var(--ribbon-color); left: 65px; top: 0; }
-      .lid::before { content: ''; height: 30px; width: 100%; background: var(--ribbon-color); top: 65px; left: 0; }
+      .lid::before { content: ''; position: absolute; height: 30px; width: 100%; background: var(--ribbon-color); top: 65px; left: 0; }
       .bow { position: absolute; top: -40px; font-size: 50px; color: var(--ribbon-color); filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); z-index: 5; transition: transform 0.8s ease; }
 
-      @keyframes rotateBox { 0% { transform: rotateX(-20deg) rotateY(0deg); } 100% { transform: rotateX(-20deg) rotateY(360deg); } }
+      /* --- BUKET BUNGA CSS --- */
+      #bouquet-container {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        width: 200px; height: 250px;
+        z-index: 15; cursor: pointer;
+        opacity: 0;
+        transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        display: flex; flex-direction: column; align-items: center;
+      }
 
-      /* Bouquet */
-      #bouquet-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); width: 200px; height: 250px; z-index: 15; cursor: pointer; opacity: 0; transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); display: flex; flex-direction: column; align-items: center; }
-      .bouquet-paper { position: absolute; bottom: 0; width: 180px; height: 180px; background: linear-gradient(135deg, #ff80ab, #f50057); clip-path: polygon(20% 0, 80% 0, 100% 100%, 0% 100%); z-index: 1; }
-      .bouquet-paper::after { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%); }
-      .bouquet-flowers { position: absolute; top: 20px; z-index: 2; display: flex; justify-content: center; width: 100%; }
-      .flower { position: absolute; font-size: 3rem; transition: transform 0.3s; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); }
-      .f1 { left: 50%; transform: translateX(-50%) translateY(-20px) rotate(-10deg); z-index: 5; font-size: 3.5rem;} 
+      /* Kertas Bungkus */
+      .bouquet-paper {
+        position: absolute; bottom: 0; width: 180px; height: 180px;
+        background: linear-gradient(135deg, #ff80ab, #f50057);
+        clip-path: polygon(20% 0, 80% 0, 100% 100%, 0% 100%);
+        z-index: 1;
+      }
+      /* Kilau kertas */
+      .bouquet-paper::after {
+        content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+        background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
+      }
+
+      /* Bunga-bunga */
+      .bouquet-flowers {
+        position: absolute; top: 20px; z-index: 2;
+        display: flex; justify-content: center; width: 100%;
+      }
+      .flower {
+        position: absolute; font-size: 3rem;
+        transition: transform 0.3s;
+        filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+      }
+      /* Posisi Bunga Agar Rapi */
+      .f1 { left: 50%; transform: translateX(-50%) translateY(-20px) rotate(-10deg); z-index: 5; font-size: 3.5rem;} /* Tengah */
       .f2 { left: 20%; transform: translateY(-10px) rotate(-25deg); z-index: 3; }
       .f3 { left: 80%; transform: translateY(-10px) rotate(25deg); z-index: 3; }
       .f4 { left: 35%; transform: translateY(0px) rotate(-5deg); z-index: 4; font-size: 2.5rem;}
       .f5 { left: 65%; transform: translateY(0px) rotate(5deg); z-index: 4; font-size: 2.5rem;}
       .f6 { left: 10%; transform: translateY(10px) rotate(-30deg); z-index: 2; font-size: 2rem;}
       .f7 { left: 90%; transform: translateY(10px) rotate(30deg); z-index: 2; font-size: 2rem;}
-      .big-bow { position: absolute; bottom: 40px; z-index: 3; font-size: 4rem; color: var(--ribbon-color); filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3)); }
-      
-      /* Letter */
-      #letter-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) translateY(20px); width: 90vw; max-width: 400px; max-height: 85vh; background: var(--letter-bg); border-radius: 10px; padding: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center; opacity: 0; pointer-events: none; transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); z-index: 1; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e0e0e0; }
-      body.box-opened #gift-scene { opacity: 0; pointer-events: none; transform: scale(0.5); }
-      body.box-opened #bouquet-container { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      body.show-letter #bouquet-container { opacity: 0; transform: translate(-50%, -50%) scale(0.5); pointer-events: none; }
-      body.show-letter #letter-container { opacity: 1; transform: translate(-50%, -50%) translateY(0); pointer-events: all; z-index: 20; overflow-y: auto; }
+
+      /* Pita Besar */
+      .big-bow {
+        position: absolute; bottom: 40px; z-index: 3;
+        font-size: 4rem; color: var(--ribbon-color);
+        filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+      }
+
+      .hint-text {
+        position: absolute; bottom: -50px; width: 100%; text-align: center;
+        color: #d81b60; font-family: "Pixelify Sans", sans-serif; font-weight: bold;
+        text-shadow: 0 2px 4px rgba(255,255,255,0.8);
+        animation: bounce 2s infinite;
+      }
+
+      /* --- SURAT --- */
+      #letter-container {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%) translateY(20px);
+        width: 90vw; max-width: 400px; height: auto; max-height: 85vh;
+        background: var(--letter-bg); border-radius: 10px; padding: 25px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center;
+        opacity: 0; pointer-events: none;
+        transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        z-index: 1; display: flex; flex-direction: column;
+        overflow: hidden; border: 1px solid #e0e0e0;
+      }
+
+      /* --- STATES --- */
+      body.box-opened #gift-scene {
+        opacity: 0; pointer-events: none; transform: scale(0.5);
+      }
+      body.box-opened #bouquet-container {
+        opacity: 1; transform: translate(-50%, -50%) scale(1);
+      }
+
+      body.show-letter #bouquet-container {
+        opacity: 0; transform: translate(-50%, -50%) scale(0.5); pointer-events: none;
+      }
+      body.show-letter #letter-container {
+        opacity: 1; transform: translate(-50%, -50%) translateY(0);
+        pointer-events: all; z-index: 20; overflow-y: auto;
+      }
+
+      /* --- PROPOSAL & BUTTONS --- */
+      #proposal-view { display: flex; flex-direction: column; align-items: center; }
+      h1 { font-family: "Pixelify Sans", cursive; color: #d81b60; font-size: 1.8rem; margin-bottom: 15px; line-height: 1.2; }
+      .cat-gif { width: 100px; height: 100px; border-radius: 50%; margin-bottom: 20px; border: 4px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); background: #fff; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: #ff9800; }
+      .buttons { display: flex; justify-content: center; align-items: center; gap: 40px; margin-top: 25px; width: 100%; min-height: 80px; position: relative; }
+      .btn { padding: 12px 25px; border: none; border-radius: 50px; font-family: "Aldrich", sans-serif; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 110px; }
+      .yes-btn { background-color: var(--success-color); color: white; z-index: 5; }
+      .yes-btn:hover { box-shadow: 0 0 15px var(--success-color); transform: scale(1.05); }
+      .no-btn { background-color: #f44336; color: white; }
+
+      /* --- FULL LETTER --- */
+      #full-letter { display: none; text-align: left; animation: popIn 0.6s ease forwards; width: 100%; }
+      .letter-header { text-align: center; margin-bottom: 20px; border-bottom: 2px dashed var(--accent-color); padding-bottom: 10px; }
+      .letter-title { font-family: "Pixelify Sans", cursive; color: #d81b60; font-size: 2rem; margin-bottom: 5px; text-align: center; }
+      .letter-body { font-family: "Patrick Hand", cursive; font-size: 1.3rem; line-height: 1.6; color: #555; margin-bottom: 20px; white-space: pre-wrap; }
+      .typing-cursor::after { content: '|'; animation: blink 1s infinite; }
+      .highlight-box { background-color: #e8f5e9; border-left: 5px solid var(--success-color); padding: 15px; margin: 20px 0; border-radius: 5px; font-family: "Patrick Hand", cursive; font-size: 1.3rem; }
+      .signature { text-align: right; font-family: "Patrick Hand", cursive; font-size: 1.5rem; margin-top: 30px; color: #d81b60; }
+      .photo-gallery { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+      .photo-slot { width: 80px; height: 80px; background-color: #eee; border-radius: 10px; overflow: hidden; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+      .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
+
+      @keyframes rotateBox { 0% { transform: rotateX(-20deg) rotateY(0deg); } 100% { transform: rotateX(-20deg) rotateY(360deg); } }
+      @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+      @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+      @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+      @keyframes confetti { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+      .confetti-piece { position: absolute; width: 10px; height: 20px; top: -20px; z-index: 100; pointer-events: none; }
     </style>
   </head>
   <body>
-    <!-- Musik -->
+
+    <!-- MUSIC PLAYER -->
     <audio id="bg-music" loop>
-      <source src="lagu.mp3" type="audio/mpeg">
+      <source src="lagu.mp3.mp3" type="audio/mpeg">
     </audio>
     <div class="music-control" id="music-btn" onclick="toggleMusic()">
       <i class="fas fa-music"></i>
     </div>
 
-    <!-- Kado -->
+    <!-- TAHAP 1: KOTAK KADO -->
     <div id="gift-scene">
       <div class="cube" id="cube">
         <div class="face front"></div>
@@ -117,32 +238,36 @@
         <div class="face right"></div>
         <div class="face left"></div>
         <div class="face bottom"></div>
-        <div class="lid"><div class="bow">🎀</div></div>
+        <div class="lid">
+            <div class="bow">🎀</div>
+        </div>
       </div>
       <p class="hint-text">Klik Kadonya!</p>
     </div>
 
-    <!-- Buket -->
+    <!-- TAHAP 2: BUKET BUNGA (Muncul setelah kado dibuka) -->
     <div id="bouquet-container">
-      <div class="bouquet-flowers">
-        <div class="flower f1">🌹</div>
-        <div class="flower f2">🌹</div>
-        <div class="flower f3">🌸</div>
-        <div class="flower f4">🌹</div>
-        <div class="flower f5">🌷</div>
-        <div class="flower f6">🌿</div>
-        <div class="flower f7">🌿</div>
-      </div>
-      <div class="bouquet-paper"></div>
-      <div class="big-bow">🎀</div>
-      <p class="hint-text" style="color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">Klik Buket!</p>
+        <div class="bouquet-flowers">
+            <div class="flower f1">🌹</div>
+            <div class="flower f2">🌹</div>
+            <div class="flower f3">🌸</div>
+            <div class="flower f4">🌹</div>
+            <div class="flower f5">🌷</div>
+            <div class="flower f6">🌿</div>
+            <div class="flower f7">🌿</div>
+        </div>
+        <div class="bouquet-paper"></div>
+        <div class="big-bow">🎀</div>
+        <p class="hint-text" style="color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">Klik Buket!</p>
     </div>
 
-    <!-- Surat -->
+    <!-- TAHAP 3: SURAT (Letter Container) -->
     <div id="letter-container">
       <div id="proposal-view">
         <h1>Will you be<br>my Valentine, Ardan?</h1>
-        <div class="cat-gif"><i class="fas fa-cat"></i></div>
+        <div class="cat-gif">
+          <i class="fas fa-cat"></i>
+        </div>
         <div class="buttons" id="letter-buttons">
           <button class="btn yes-btn" id="yesBtn">Yes! <i class="fas fa-check"></i></button>
           <button class="btn no-btn" id="noBtn">No</button>
@@ -151,26 +276,157 @@
 
       <div id="full-letter">
         <div class="letter-header">
-          <div class="letter-title">Yeay! 😻</div>
-          <small style="color: #888;">MALUUU NYAAAAA!</small>
+            <div class="letter-title">Yeay! 😻</div>
+            <small style="color: #888;">MALUUU NYAAAAA!</small>
         </div>
         <div class="photo-gallery">
-          <div class="photo-slot"><img src="foto 1.jpeg" alt="Foto1"></div>
-          <div class="photo-slot"><img src="foto 2.jpeg" alt="Foto2"></div>
-          <div class="photo-slot"><img src="foto 3.jpeg" alt="Foto3"></div>
+            <div class="photo-slot"><img src="foto 1.jpeg" alt="Foto1"></div>
+            <div class="photo-slot"><img src="foto 2.jpeg" alt="Foto2"></div>
+            <div class="photo-slot"><img src="foto 3.jpeg" alt="Foto3"></div>
         </div>
         <div class="letter-body" id="typewriter-text"></div>
         <div class="signature">
-          With Love,<br>
-          <strong>(anak lpg)</strong>
+            With Love,<br>
+            <strong>(anak lpg)</strong>
         </div>
       </div>
     </div>
 
     <script>
-      // Script sama persis seperti versi FINAL sebelumnya
-      // (Fade-in musik, klik kado → buket → surat, tombol No lari, Yes confetti + typewriter)
-      // Copy paste script.js yang sudah aku tulis di jawaban sebelumnya
+      document.addEventListener("DOMContentLoaded", () => {
+        const giftScene = document.getElementById("gift-scene");
+        const cube = document.getElementById("cube");
+        const bouquetContainer = document.getElementById("bouquet-container");
+        const yesBtn = document.getElementById("yesBtn");
+        const noBtn = document.getElementById("noBtn");
+        const proposalView = document.getElementById("proposal-view");
+        const fullLetter = document.getElementById("full-letter");
+        const letterButtons = document.getElementById("letter-buttons");
+        const body = document.body;
+        const audio = document.getElementById("bg-music");
+        const musicBtn = document.getElementById("music-btn");
+
+        // 1. Logic Buka Kado -> Munculkan Buket
+        giftScene.addEventListener("click", () => {
+          if (!body.classList.contains("box-opened")) {
+            // Animasi Buka Kotak
+            cube.classList.add("opened"); // Ini cuma buka tutup kotak di visual 3D
+            cube.classList.add("stop-rotate");
+            document.querySelector('#gift-scene .hint-text').style.display = 'none';
+            
+            // Play Musik
+            audio.volume = 0.5;
+            audio.play().then(() => { musicBtn.classList.add('playing'); }).catch(e => console.log("Autoplay blocked"));
+
+            // Transisi ke Buket
+            setTimeout(() => {
+                body.classList.add("box-opened");
+            }, 800);
+          }
+        });
+
+        // 2. Logic Klik Buket -> Munculkan Surat
+        bouquetContainer.addEventListener("click", () => {
+             body.classList.add("show-letter");
+             document.querySelector('#bouquet-container .hint-text').style.display = 'none';
+        });
+
+        // Music Toggle
+        window.toggleMusic = function() {
+            if (audio.paused) { audio.play(); musicBtn.classList.add('playing'); } 
+            else { audio.pause(); musicBtn.classList.remove('playing'); }
+        };
+
+        // 3. Logic Tombol "No" Kabur
+        const moveButton = () => {
+          const containerRect = letterButtons.getBoundingClientRect();
+          const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+          const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+          const randomX = Math.floor(Math.random() * (maxX - 20)) + 10;
+          const randomY = Math.floor(Math.random() * (maxY - 20)) + 10;
+          noBtn.style.position = "fixed";
+          noBtn.style.left = randomX + "px";
+          noBtn.style.top = randomY + "px";
+          noBtn.style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
+        };
+        noBtn.addEventListener("mouseover", moveButton);
+        noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveButton(); });
+        noBtn.addEventListener("click", (e) => { e.preventDefault(); moveButton(); });
+
+        // 4. Logic Tombol "Yes"
+        yesBtn.addEventListener("click", () => {
+          proposalView.style.display = "none";
+          fullLetter.style.display = "block";
+          createConfetti();
+          
+          const message = `Dear Ardan,
+
+aloooooooooooooooo hihi
+get bored and decide instead of ngerjain projek nya kia yg boring bgt itu i made u one of these,
+congratsss suda officially jadi pacar anak Teknik informatika hahhaha dibikinin kaya ginian
+
+actually fuck February 14 tho i love u everyday wkwk, tapi karena keinget banyak ank Teknik ngasih gini yasudaa dee hehe
+
+first of all, thank u for being my kind, handsome, hardworking, smart, loving bf 
+ardan seriously 10/10!!! i love u very much
+
+sebanyak apapun word of affirmation gaakan bisa ngehitung how much i love u
+
+and im sorry if kia buat kesalahann, its my first time being gf thoo ueueuue
+
+kia berasa karakter AU kalau kaya gini hahhaha
+oiya kedengeran ga si lagu nyaa, anthem kita wkwk
+
+tapi u are actually the best part of my high school
+kayanya kalo gaada ardann kia gaakan se optimis sekarang dee
+il be lonely ueueuue
+
+terimakasih dulu pernah sabar bgt ngejar kiaa
+
+anw im sorry tho blm pernah kasih ardan actual love letter, im suck at bikin diy gt gt
+tapi kia akan berusaha bikin hehe, wait for ur actual letter yaaa
+
+see yuuuuuuuu muahhh ( kiss nya chat okee)
+`;
+
+          typeWriter(message, "typewriter-text");
+          
+        
+        });
+
+        // Type Writer Function
+        function typeWriter(text, elementId, append = false) {
+            const element = document.getElementById(elementId);
+            if(!append) element.innerHTML = ""; 
+            element.classList.add("typing-cursor");
+            let i = 0; const speed = 30; 
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    const container = document.getElementById('letter-container');
+                    container.scrollTop = container.scrollHeight;
+                    setTimeout(type, speed);
+                } else { element.classList.remove("typing-cursor"); }
+            }
+            type();
+        }
+
+        // Confetti
+        function createConfetti() {
+          const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
+          for (let i = 0; i < 60; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti-piece');
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animation = `confetti ${Math.random() * 2 + 2}s linear forwards`;
+            confetti.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(confetti);
+            setTimeout(() => { confetti.remove(); }, 5000);
+          }
+        }
+      });
     </script>
   </body>
 </html>
