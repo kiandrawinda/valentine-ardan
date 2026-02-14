@@ -35,8 +35,9 @@
 
       body {
         background-color: var(--bg-color);
-        background-image: radial-gradient(#f8bbd0 2px, transparent 2px);
-        background-size: 30px 30px;
+        /* Polkadot lebih simpel biar ringan */
+        background-image: radial-gradient(#f8bbd0 20%, transparent 20%); 
+        background-size: 40px 40px;
         font-family: "Aldrich", sans-serif;
         height: 100vh;
         width: 100vw;
@@ -45,6 +46,8 @@
         justify-content: center;
         align-items: center;
         perspective: 1000px;
+        /* Force GPU rendering pada body */
+        transform: translate3d(0,0,0); 
       }
 
       /* --- MUSIC PLAYER --- */
@@ -55,15 +58,17 @@
         box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; cursor: pointer;
         border: 2px solid var(--box-color);
         animation: spin 4s linear infinite; animation-play-state: paused;
+        will-change: transform; /* Optimasi */
       }
       .music-control.playing { animation-play-state: running; }
       @keyframes spin { 100% { transform: rotate(360deg); } }
 
-      /* --- 3D GIFT BOX --- */
+      /* --- 3D GIFT BOX (DIOPTIMASI) --- */
       #gift-scene {
         width: 150px; height: 150px;
         perspective: 1000px; position: relative; z-index: 10; cursor: pointer;
         transition: opacity 0.5s ease, transform 0.5s ease;
+        will-change: transform, opacity;
       }
       .cube {
         width: 100%; height: 100%; position: relative;
@@ -71,6 +76,7 @@
         transform: rotateX(-20deg) rotateY(45deg);
         animation: rotateBox 6s infinite linear;
         transition: transform 1s ease;
+        will-change: transform; /* Kunci Anti-Lag */
       }
       #gift-scene:hover .cube, .cube.stop-rotate {
         animation-play-state: paused;
@@ -80,7 +86,9 @@
         position: absolute; width: 150px; height: 150px;
         background: var(--box-color); border: 2px solid #b71c1c;
         display: flex; justify-content: center; align-items: center;
-        box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+        /* Shadow dikurangi sedikit biar ringan */
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        backface-visibility: hidden; /* Optimasi: sembunyikan sisi belakang */
       }
       /* Pita Kotak */
       .face::after { content: ''; position: absolute; width: 30px; height: 100%; background: var(--ribbon-color); left: 60px; top: 0; }
@@ -89,7 +97,7 @@
       .back   { transform: rotateY(180deg) translateZ(75px); }
       .right  { transform: rotateY(90deg) translateZ(75px); }
       .left   { transform: rotateY(-90deg) translateZ(75px); }
-      .bottom { transform: rotateX(-90deg) translateZ(75px); box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+      .bottom { transform: rotateX(-90deg) translateZ(75px); box-shadow: 0 0 30px rgba(0,0,0,0.3); }
       
       .lid {
         position: absolute; width: 160px; height: 160px;
@@ -113,22 +121,20 @@
         opacity: 0;
         transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         display: flex; flex-direction: column; align-items: center;
+        will-change: transform, opacity;
       }
 
-      /* Kertas Bungkus */
       .bouquet-paper {
         position: absolute; bottom: 0; width: 180px; height: 180px;
         background: linear-gradient(135deg, #ff80ab, #f50057);
         clip-path: polygon(20% 0, 80% 0, 100% 100%, 0% 100%);
         z-index: 1;
       }
-      /* Kilau kertas */
       .bouquet-paper::after {
         content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
         background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
       }
 
-      /* Bunga-bunga */
       .bouquet-flowers {
         position: absolute; top: 20px; z-index: 2;
         display: flex; justify-content: center; width: 100%;
@@ -137,9 +143,9 @@
         position: absolute; font-size: 3rem;
         transition: transform 0.3s;
         filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+        will-change: transform;
       }
-      /* Posisi Bunga Agar Rapi */
-      .f1 { left: 50%; transform: translateX(-50%) translateY(-20px) rotate(-10deg); z-index: 5; font-size: 3.5rem;} /* Tengah */
+      .f1 { left: 50%; transform: translateX(-50%) translateY(-20px) rotate(-10deg); z-index: 5; font-size: 3.5rem;} 
       .f2 { left: 20%; transform: translateY(-10px) rotate(-25deg); z-index: 3; }
       .f3 { left: 80%; transform: translateY(-10px) rotate(25deg); z-index: 3; }
       .f4 { left: 35%; transform: translateY(0px) rotate(-5deg); z-index: 4; font-size: 2.5rem;}
@@ -147,7 +153,6 @@
       .f6 { left: 10%; transform: translateY(10px) rotate(-30deg); z-index: 2; font-size: 2rem;}
       .f7 { left: 90%; transform: translateY(10px) rotate(30deg); z-index: 2; font-size: 2rem;}
 
-      /* Pita Besar */
       .big-bow {
         position: absolute; bottom: 40px; z-index: 3;
         font-size: 4rem; color: var(--ribbon-color);
@@ -172,9 +177,9 @@
         transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         z-index: 1; display: flex; flex-direction: column;
         overflow: hidden; border: 1px solid #e0e0e0;
+        will-change: transform, opacity;
       }
 
-      /* --- STATES --- */
       body.box-opened #gift-scene {
         opacity: 0; pointer-events: none; transform: scale(0.5);
       }
@@ -217,14 +222,15 @@
       @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
       @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
       @keyframes confetti { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
-      .confetti-piece { position: absolute; width: 10px; height: 20px; top: -20px; z-index: 100; pointer-events: none; }
+      .confetti-piece { position: absolute; width: 10px; height: 20px; top: -20px; z-index: 100; pointer-events: none; will-change: transform; }
     </style>
   </head>
   <body>
 
     <!-- MUSIC PLAYER -->
     <audio id="bg-music" loop>
-      <source src="lagu.mp3.mp3" type="audio/mpeg">
+      <!-- Pastikan nama file di folder kamu: lagu.mp3 -->
+      <source src="lagu.mp3" type="audio/mpeg">
     </audio>
     <div class="music-control" id="music-btn" onclick="toggleMusic()">
       <i class="fas fa-music"></i>
@@ -245,7 +251,7 @@
       <p class="hint-text">Klik Kadonya!</p>
     </div>
 
-    <!-- TAHAP 2: BUKET BUNGA (Muncul setelah kado dibuka) -->
+    <!-- TAHAP 2: BUKET BUNGA -->
     <div id="bouquet-container">
         <div class="bouquet-flowers">
             <div class="flower f1">🌹</div>
@@ -261,7 +267,7 @@
         <p class="hint-text" style="color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">Klik Buket!</p>
     </div>
 
-    <!-- TAHAP 3: SURAT (Letter Container) -->
+    <!-- TAHAP 3: SURAT -->
     <div id="letter-container">
       <div id="proposal-view">
         <h1>Will you be<br>my Valentine, Ardan?</h1>
@@ -280,9 +286,10 @@
             <small style="color: #888;">MALUUU NYAAAAA!</small>
         </div>
         <div class="photo-gallery">
-            <div class="photo-slot"><img src="foto 1.jpeg" alt="Foto1"></div>
-            <div class="photo-slot"><img src="foto 2.jpeg" alt="Foto2"></div>
-            <div class="photo-slot"><img src="foto 3.jpeg" alt="Foto3"></div>
+            <!-- PASTIKAN NAMA FILE FOTO DI FOLDER KAMU: foto1.jpg, foto2.jpg, foto3.jpg -->
+            <div class="photo-slot"><img src="foto1.jpg" alt="Foto1"></div>
+            <div class="photo-slot"><img src="foto2.jpg" alt="Foto2"></div>
+            <div class="photo-slot"><img src="foto3.jpg" alt="Foto3"></div>
         </div>
         <div class="letter-body" id="typewriter-text"></div>
         <div class="signature">
@@ -306,49 +313,50 @@
         const audio = document.getElementById("bg-music");
         const musicBtn = document.getElementById("music-btn");
 
-        // 1. Logic Buka Kado -> Munculkan Buket
+        // 1. Logic Buka Kado
         giftScene.addEventListener("click", () => {
           if (!body.classList.contains("box-opened")) {
-            // Animasi Buka Kotak
-            cube.classList.add("opened"); // Ini cuma buka tutup kotak di visual 3D
+            cube.classList.add("opened");
             cube.classList.add("stop-rotate");
             document.querySelector('#gift-scene .hint-text').style.display = 'none';
             
-            // Play Musik
             audio.volume = 0.5;
             audio.play().then(() => { musicBtn.classList.add('playing'); }).catch(e => console.log("Autoplay blocked"));
 
-            // Transisi ke Buket
             setTimeout(() => {
                 body.classList.add("box-opened");
             }, 800);
           }
         });
 
-        // 2. Logic Klik Buket -> Munculkan Surat
+        // 2. Logic Klik Buket
         bouquetContainer.addEventListener("click", () => {
              body.classList.add("show-letter");
              document.querySelector('#bouquet-container .hint-text').style.display = 'none';
         });
 
-        // Music Toggle
         window.toggleMusic = function() {
             if (audio.paused) { audio.play(); musicBtn.classList.add('playing'); } 
             else { audio.pause(); musicBtn.classList.remove('playing'); }
         };
 
-        // 3. Logic Tombol "No" Kabur
+        // 3. Logic Tombol "No" Kabur (DIOPTIMASI PAKAI TRANSFORM)
         const moveButton = () => {
           const containerRect = letterButtons.getBoundingClientRect();
           const maxX = window.innerWidth - noBtn.offsetWidth - 20;
           const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+          
           const randomX = Math.floor(Math.random() * (maxX - 20)) + 10;
           const randomY = Math.floor(Math.random() * (maxY - 20)) + 10;
+          const randomRot = Math.random() * 20 - 10;
+
+          // Pakai Transform, bukan Top/Left (Lebih Ringan!)
           noBtn.style.position = "fixed";
-          noBtn.style.left = randomX + "px";
-          noBtn.style.top = randomY + "px";
-          noBtn.style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
+          noBtn.style.left = "50%"; // Reset posisi awal
+          noBtn.style.top = "50%";
+          noBtn.style.transform = `translate(${randomX - window.innerWidth/2}px, ${randomY - window.innerHeight/2}px) rotate(${randomRot}deg)`;
         };
+
         noBtn.addEventListener("mouseover", moveButton);
         noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveButton(); });
         noBtn.addEventListener("click", (e) => { e.preventDefault(); moveButton(); });
@@ -412,10 +420,11 @@ see yuuuuuuuu muahhh ( kiss nya chat okee)
             type();
         }
 
-        // Confetti
+        // Confetti (DIKURANGI JADI 30 BIAR RINGAN)
         function createConfetti() {
           const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
-          for (let i = 0; i < 60; i++) {
+          // GANTI 60 JADI 30
+          for (let i = 0; i < 30; i++) {
             const confetti = document.createElement('div');
             confetti.classList.add('confetti-piece');
             confetti.style.left = Math.random() * 100 + 'vw';
